@@ -57,6 +57,15 @@
     }
   
     actualizarCarro(productosCarro);
+    
+    Swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: 'Producto agregado correctamente.',
+      showConfirmButton: false,
+      timer: 1500
+    })
+
   }
   
   function actualizarCarro(listadoProductos) {
