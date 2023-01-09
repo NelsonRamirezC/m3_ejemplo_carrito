@@ -12,3 +12,7 @@ nombre: "Carlos", password: "123456
 
 ## REQUERIMIENTOS
 
+## links a GITHUB
+link repositorio:
+link github pages: 
+
