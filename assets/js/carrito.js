@@ -2,10 +2,17 @@ let cupones = [
   {
     nombre: "10%",
     descuento: 10,
+    estado: true,
   },
   {
     nombre: "20%",
     descuento: 20,
+    estado: true
+  },
+  {
+    nombre: "50%",
+    descuento: 50,
+    estado: true
   },
 ];
 
@@ -96,7 +103,8 @@ document
       (cupon) => cupon.nombre == cuponIngresado
     );
 
-    if (cuponEncontrado) {
+
+    if (cuponEncontrado && cuponEncontrado.estado == true) {
       alert("cupón encontrado.");
       precioTotalCompra =
         precioTotalCompra -
@@ -104,8 +112,9 @@ document
       document.querySelector(
         "#precio-total"
       ).innerHTML = `El precio total de la compra con descuento es: <strong>$${precioTotalCompra}</strong>`;
+      cuponEncontrado.estado = false;
     } else {
-      alert("El cupón no existe.");
+      alert("El cupón no existe. / o está caducado");
     }
   });
 
@@ -118,7 +127,11 @@ document
       if(sku == producto.sku){
         producto.cantidad = producto.cantidad - 1;
         if(producto.cantidad <= 0){
-          productosCarro.splice(index, 1)
+          if(confirm("Está seguro que desea eliminar?")){
+            productosCarro.splice(index, 1)
+          }else{
+            producto.cantidad =1;
+          }
         }
       }
     })
