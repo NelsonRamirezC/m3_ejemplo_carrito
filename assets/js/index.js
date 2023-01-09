@@ -80,4 +80,3 @@
     document.querySelector("#cantidad-productos").innerText = sumaProductos;
   }
   
-  cargarProductos();

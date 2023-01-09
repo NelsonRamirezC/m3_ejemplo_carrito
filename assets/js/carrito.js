@@ -1,12 +1,12 @@
 let cupones = [
   {
     nombre: "10%",
-    descuento: 10
+    descuento: 10,
   },
   {
     nombre: "20%",
-    descuento: 20
-  }
+    descuento: 20,
+  },
 ];
 
 let productosCarro = [];
@@ -31,28 +31,34 @@ function actualizarCarro(listadoProductos) {
   document.querySelector("#cantidad-productos").innerText = sumaProductos;
 }
 
-cargarTablaProductos()
+cargarTablaProductos();
 
 function cargarTablaProductos() {
   let acumuladorFilas = "";
 
   precioTotalCompra = 0;
   productosCarro.forEach((producto, index) => {
-
     let productoConDetalles = encontrarProducto(producto.sku);
-    let precioUnitario = productoConDetalles.precio - productoConDetalles.descuento;
+    let precioUnitario =
+      productoConDetalles.precio - productoConDetalles.descuento;
     let totalProducto = producto.cantidad * precioUnitario;
     precioTotalCompra += totalProducto;
 
     let template = `
             <tr>
-                <th scope="row">${index+1}</th>
+                <th scope="row">${index + 1}</th>
                 <td>${productoConDetalles.sku}</td>
                 <td>${productoConDetalles.nombre}</td>
                 <td>${productoConDetalles.precio}</td>
                 <td>${productoConDetalles.descuento}</td>
                 <td>${precioUnitario}</td>
-                <td>${producto.cantidad}</td>
+                <td>
+                  <button onclick="restar('${productoConDetalles.sku}')">-</button>
+                  <input type="number" value="${
+                    producto.cantidad
+                  }" style="width:30px;" min="0" max="10">
+                  <button onclick="sumar('${productoConDetalles.sku}')">+</button>
+                </td>
                 <td>${totalProducto}</td>
             </tr>
     `;
@@ -61,37 +67,79 @@ function cargarTablaProductos() {
 
   document.querySelector("#productos-carrito tbody").innerHTML =
     acumuladorFilas;
-    document.querySelector("#precio-total").innerHTML = `El precio total de la compra es: <strong>$${precioTotalCompra}</strong>`
+  document.querySelector(
+    "#precio-total"
+  ).innerHTML = `El precio total de la compra es: <strong>$${precioTotalCompra}</strong>`;
 }
 
-function encontrarProducto(sku){
-  let encontrado = productos.find(producto => producto.sku == sku)
+function encontrarProducto(sku) {
+  let encontrado = productos.find((producto) => producto.sku == sku);
   return encontrado;
 }
 
 //LÓGICA VACIAR CARRITO
-document.getElementById("btn-vaciar").addEventListener("click", function(event){
-  event.preventDefault();
-  localStorage.setItem("productos", "[]");
-  location.reload();
-})
+document
+  .getElementById("btn-vaciar")
+  .addEventListener("click", function (event) {
+    event.preventDefault();
+    localStorage.setItem("productos", "[]");
+    location.reload();
+  });
 
 //LÓGICA DESCUENTO POR CUPÓN
-document.getElementById("btn-descuento").addEventListener("click", function(event){
-  
- let cuponIngresado = document.getElementById("input-cupon").value;
+document
+  .getElementById("btn-descuento")
+  .addEventListener("click", function (event) {
+    let cuponIngresado = document.getElementById("input-cupon").value;
 
- let cuponEncontrado = cupones.find(cupon => cupon.nombre == cuponIngresado );
+    let cuponEncontrado = cupones.find(
+      (cupon) => cupon.nombre == cuponIngresado
+    );
 
- if(cuponEncontrado){
-  alert("cupón encontrado.")
-  precioTotalCompra = precioTotalCompra - (precioTotalCompra * cuponEncontrado.descuento/100)
-  document.querySelector("#precio-total").innerHTML = `El precio total de la compra con descuento es: <strong>$${precioTotalCompra}</strong>`
- }else{
-  alert("El cupón no existe.")
- }
+    if (cuponEncontrado) {
+      alert("cupón encontrado.");
+      precioTotalCompra =
+        precioTotalCompra -
+        (precioTotalCompra * cuponEncontrado.descuento) / 100;
+      document.querySelector(
+        "#precio-total"
+      ).innerHTML = `El precio total de la compra con descuento es: <strong>$${precioTotalCompra}</strong>`;
+    } else {
+      alert("El cupón no existe.");
+    }
+  });
 
- 
+
+  //SUMAR PRODUCTOS
+
+  function restar(sku){
+
+    productosCarro.forEach((producto, index) => {
+      if(sku == producto.sku){
+        producto.cantidad = producto.cantidad - 1;
+        if(producto.cantidad <= 0){
+          productosCarro.splice(index, 1)
+        }
+      }
+    })
+    actualizarCarro(productosCarro);
+    cargarTablaProductos();
+  }
 
 
-})
+  //RESTAR PRODUCTOS
+
+  function sumar(sku){
+
+    productosCarro.forEach((producto, index) => {
+      if(sku == producto.sku){
+        producto.cantidad = producto.cantidad + 1;
+        if(producto.cantidad >= 10){
+          producto.cantidad =10;
+          alert("Alcanzo el limite de productos permitidos (10 unidades)")
+        }
+      }
+    })
+    actualizarCarro(productosCarro);
+    cargarTablaProductos();
+  }
